@@ -47,14 +47,20 @@ public class BookController {
     }
 
     @PostMapping("/book")
-    public BookDTO addBook(@Valid  @RequestBody BookDTO book) {
+    public BookDTO addBook(@Valid @RequestBody BookDTO book) {
         return bookService.saveBook(book);
     }
 
-    @PostMapping("/book/{id}/author")
+    @PutMapping("/book/{id}/author")
     public BookDTO addAuthorToBook(@Valid @RequestBody AuthorDTO author,
                                    @Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
         return bookService.addAuthorToBook(bookId, author);
+    }
+
+    @DeleteMapping("/book/{id}/author")
+    public BookDTO detachAuthorFromBook(@Valid @RequestBody AuthorDTO author,
+                                   @Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
+        return bookService.detachAuthorFromBook(bookId, author);
     }
 
     @PutMapping("/book")

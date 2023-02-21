@@ -14,4 +14,5 @@ public interface BookService {
     BookDTO saveBook(BookDTO book);
     BookDTO updateBook(BookDTO book) throws NotFoundException;
     BookDTO addAuthorToBook(Integer bookId, AuthorDTO author) throws NotFoundException;
+    BookDTO detachAuthorFromBook(Integer bookId, AuthorDTO author) throws NotFoundException;
 }

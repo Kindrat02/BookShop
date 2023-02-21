@@ -60,6 +60,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDTO saveBook(BookDTO book) {
         Book bookModel = bookMapper.toModel(book);
+        for (Author author: bookModel.getAuthors()) {
+            author.getBooks().add(bookModel);
+        }
         Book savedEntity = bookRepository.save(bookModel);
         return bookMapper.toDTO(savedEntity);
     }
@@ -71,22 +74,44 @@ public class BookServiceImpl implements BookService {
 
         Book book = bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
         book.getAuthors().add(authorEntity);
+        authorEntity.getBooks().add(book);
+        bookRepository.save(book);
 
         return bookMapper.toDTO(book);
     }
 
     @Override
-    public BookDTO updateBook(BookDTO book) throws NotFoundException {
-        Book savedEntity = bookRepository.findById(book.getId()).orElseThrow(NotFoundException::new);
+    public BookDTO detachAuthorFromBook(Integer bookId, AuthorDTO author) throws NotFoundException {
+        Author authorEntity = authorMapper.toModel(author);
+        authorEntity = authorRepository.findById(authorEntity.getId()).orElseThrow(NotFoundException::new);
 
-        savedEntity.setName(book.getName());
-        savedEntity.setPublishDate(book.getPublishDate());
-        savedEntity.setAuthors(book
+        Book book = bookRepository.findById(bookId).orElseThrow(NotFoundException::new);
+        book.getAuthors().remove(authorEntity);
+        authorEntity.getBooks().remove(book);
+        bookRepository.save(book);
+
+        return bookMapper.toDTO(book);
+    }
+
+    // TODO: Fix update when add an author
+    @Override
+    public BookDTO updateBook(BookDTO book) throws NotFoundException {
+        Book updatedEntity = bookRepository.findById(book.getId()).orElseThrow(NotFoundException::new);
+
+        updatedEntity.setName(book.getName());
+        updatedEntity.setPublishDate(book.getPublishDate());
+        updatedEntity.setAuthors(book
                 .getAuthors()
                 .stream()
                 .map(authorMapper::toModel)
                 .collect(Collectors.toSet()));
 
-        return bookMapper.toDTO(savedEntity);
+        for (Author author: updatedEntity.getAuthors()) {
+            author.getBooks().add(updatedEntity);
+        }
+
+        updatedEntity = bookRepository.save(updatedEntity);
+
+        return bookMapper.toDTO(updatedEntity);
     }
 }
