@@ -17,7 +17,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler({ NullPointerException.class })
     public ResponseEntity<Object> handleNPE(RuntimeException ex, WebRequest request) {
         return new ResponseEntity<>(
-                "Error: " + ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                "Error: " + ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({ NotFoundException.class })
@@ -29,6 +29,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(RuntimeException ex, WebRequest request) {
         return new ResponseEntity<>(
-                "Constraint has been violated: " + ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+                "Constraint has been violated: " + ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 }

@@ -1,18 +1,16 @@
 package com.serve.mentorship.service;
 
-import com.serve.mentorship.dto.AuthorDTO;
 import com.serve.mentorship.dto.BookDTO;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookService {
-    List<BookDTO> getAllBooks();
-    BookDTO getBookById(Integer id) throws NotFoundException;
-    void deleteBook(Integer id) throws NotFoundException;
+    List<BookDTO> getAllBooks(Pageable pageable);
+    Optional<BookDTO> getBookById(Integer id);
+    boolean deleteBook(Integer id);
     BookDTO saveBook(BookDTO book);
-    BookDTO updateBook(BookDTO book) throws NotFoundException;
-    BookDTO addAuthorToBook(Integer bookId, AuthorDTO author) throws NotFoundException;
-    BookDTO detachAuthorFromBook(Integer bookId, AuthorDTO author) throws NotFoundException;
+    Optional<BookDTO> updateBook(BookDTO book);
 }

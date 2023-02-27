@@ -1,6 +1,6 @@
 package com.serve.mentorship.entity;
 
-import java.sql.Date;
+import java.util.Calendar;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -25,9 +25,15 @@ public class Book {
 
     private String name;
 
-    @Column(name = "publish_date")
-    private Date publishDate;
+    @Column(name = "publish_date", columnDefinition = "DATE")
+    private Calendar publishDate;
 
     @ManyToMany(mappedBy = "books")
     private Set<Author> authors;
+
+    @Column(name = "created_at")
+    private Calendar createdAt;
+
+    @Column(name = "updated_at")
+    private Calendar updatedAt;
 }

@@ -6,10 +6,12 @@ import com.serve.mentorship.mapper.AuthorMapper;
 import com.serve.mentorship.repository.AuthorRepository;
 import com.serve.mentorship.service.AuthorService;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,45 +25,53 @@ public class AuthorServiceImpl implements AuthorService {
         this.authorMapper = authorMapper;
     }
 
+    // TODO: transactional
+    // TODO: Spring Boot tests
     @Override
-    public List<AuthorDTO> getAllAuthors() {
+    public List<AuthorDTO> getAllAuthors(Pageable pageable) {
         return authorRepository
-                .findAll()
+                .findAll(pageable)
                 .stream()
                 .map(authorMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AuthorDTO getAuthorById(Integer id) throws NotFoundException {
-        return authorMapper.toDTO(
-                authorRepository
+    public Optional<AuthorDTO> getAuthorById(Integer id) {
+        return authorRepository
                 .findById(id)
-                .orElseThrow(NotFoundException::new));
+                .map(authorMapper::toDTO);
     }
 
     @Override
     public AuthorDTO addAuthor(AuthorDTO author) {
-        Author savedEntity = authorRepository.save(authorMapper.toModel(author));
+        Author authorModel = authorMapper.toModel(author);
+        authorModel.setCreatedAt(new GregorianCalendar());
+
+        Author savedEntity = authorRepository.save(authorModel);
         return authorMapper.toDTO(savedEntity);
     }
 
     @Override
-    public AuthorDTO updateAuthor(AuthorDTO author) throws NotFoundException {
-        Author savedEntity = authorRepository.findById(author.getId()).orElseThrow(NotFoundException::new);
+    public Optional<AuthorDTO> updateAuthor(AuthorDTO author) {
+        return authorRepository.findById(author.getId()).map(val -> {
+            val.setName(author.getName());
+            val.setSurname(author.getSurname());
+            val.setBirthDate(author.getBirthDate());
+            val.setEmail(author.getEmail());
+            val.setUpdatedAt(new GregorianCalendar());
 
-        savedEntity.setName(author.getName());
-        savedEntity.setSurname(author.getSurname());
-        savedEntity.setBirthDate(author.getBirthDate());
-
-        return authorMapper.toDTO(savedEntity);
+            return authorRepository.save(val);
+        }).map(authorMapper::toDTO);
     }
 
     @Override
-    public void deleteAuthor(Integer id) throws NotFoundException {
-        authorRepository.delete(
-                authorRepository
-                        .findById(id)
-                        .orElseThrow(NotFoundException::new));
+    public boolean deleteAuthor(Integer id) {
+        if (authorRepository.existsById(id)) {
+            authorRepository.deleteById(id);
+            return true;
+        }
+
+        return false;
     }
 }

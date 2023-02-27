@@ -1,6 +1,6 @@
 package com.serve.mentorship.entity;
 
-import java.sql.Date;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,8 +33,16 @@ public class Author {
 
     private String surname;
 
-    @Column(name = "birth_date")
-    private Date birthDate;
+    private String email;
+
+    @Column(name = "birth_date", columnDefinition = "DATE")
+    private Calendar birthDate;
+
+    @Column(name = "created_at")
+    private Calendar createdAt;
+
+    @Column(name = "updated_at")
+    private Calendar updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

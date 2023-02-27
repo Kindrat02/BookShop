@@ -1,6 +1,6 @@
 package com.serve.mentorship.dto;
 
-import java.sql.Date;
+import java.util.Calendar;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +17,7 @@ public class BookDTO {
     @Size(max = 100, message = "You have exceeded string max size")
     private String name;
     @NotNull
-    private Date publishDate;
+    private Calendar publishDate;
     @NotNull
     private Set<AuthorDTO> authors;
 }

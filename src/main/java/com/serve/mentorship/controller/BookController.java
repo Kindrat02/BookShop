@@ -1,11 +1,13 @@
 package com.serve.mentorship.controller;
 
-import com.serve.mentorship.dto.AuthorDTO;
 import com.serve.mentorship.dto.BookDTO;
-import com.serve.mentorship.entity.Book;
 import com.serve.mentorship.service.BookService;
 
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Validated
 @RestController
@@ -32,39 +35,32 @@ public class BookController {
     }
 
     @GetMapping("/book/{id}")
-    public BookDTO getBookById(@Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
-        return bookService.getBookById(bookId);
+    public ResponseEntity<BookDTO> getBookById(@Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
+        BookDTO bookDTO = bookService.getBookById(bookId).orElseThrow(NotFoundException::new);
+        return new ResponseEntity<>(bookDTO, new HttpHeaders(), HttpStatus.OK);
     }
 
     @GetMapping("/books")
-    public List<BookDTO> getAllBooks() {
-        return bookService.getAllBooks();
+    public ResponseEntity<List<BookDTO>> getAllBooks(@PositiveOrZero @RequestParam(defaultValue = "0") int page,
+                                                     @Positive @RequestParam(defaultValue = "3") int size) {
+        List<BookDTO> list = bookService.getAllBooks(PageRequest.of(page, size));
+        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @DeleteMapping("/book")
-    public void deleteBook(@Positive @RequestParam(name = "id") Integer bookId) throws NotFoundException {
-        bookService.deleteBook(bookId);
+    @DeleteMapping("/book/{id}")
+    public ResponseEntity deleteBook(@Positive @PathVariable(name = "id") Integer bookId) {
+        return new ResponseEntity(bookService.deleteBook(bookId) ? HttpStatus.OK : HttpStatus.GONE);
     }
 
     @PostMapping("/book")
-    public BookDTO addBook(@Valid @RequestBody BookDTO book) {
-        return bookService.saveBook(book);
-    }
-
-    @PutMapping("/book/{id}/author")
-    public BookDTO addAuthorToBook(@Valid @RequestBody AuthorDTO author,
-                                   @Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
-        return bookService.addAuthorToBook(bookId, author);
-    }
-
-    @DeleteMapping("/book/{id}/author")
-    public BookDTO detachAuthorFromBook(@Valid @RequestBody AuthorDTO author,
-                                   @Positive @PathVariable(name = "id") Integer bookId) throws NotFoundException {
-        return bookService.detachAuthorFromBook(bookId, author);
+    public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO book) {
+        BookDTO newBook =  bookService.saveBook(book);
+        return new ResponseEntity<>(newBook, new HttpHeaders(), HttpStatus.OK);
     }
 
     @PutMapping("/book")
-    public BookDTO updateBook(@Valid @RequestBody BookDTO book) throws NotFoundException {
-        return bookService.updateBook(book);
+    public ResponseEntity<BookDTO> updateBook(@Valid @RequestBody BookDTO book) throws NotFoundException {
+        BookDTO updatedBook = bookService.updateBook(book).orElseThrow(NotFoundException::new);
+        return new ResponseEntity<>(updatedBook, new HttpHeaders(), HttpStatus.OK);
     }
 }

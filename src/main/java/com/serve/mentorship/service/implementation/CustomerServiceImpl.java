@@ -1,14 +1,16 @@
 package com.serve.mentorship.service.implementation;
 
 import com.serve.mentorship.dto.CustomerDTO;
+import com.serve.mentorship.entity.Customer;
 import com.serve.mentorship.mapper.CustomerMapper;
 import com.serve.mentorship.repository.CustomerRepository;
 import com.serve.mentorship.service.CustomerService;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,19 +25,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDTO> getAllCustomers() {
+    public List<CustomerDTO> getAllCustomers(Pageable pageable) {
         return customerRepository
-                .findAll()
+                .findAll(pageable)
                 .stream()
                 .map(customerMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CustomerDTO getCustomerById(Integer id) throws NotFoundException {
-        return customerMapper.toDTO(
-                customerRepository
+    public Optional<CustomerDTO> getCustomerById(Integer id) {
+        return customerRepository
                 .findById(id)
-                .orElseThrow(NotFoundException::new));
+                .map(customerMapper::toDTO);
     }
 }

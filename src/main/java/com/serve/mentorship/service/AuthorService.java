@@ -2,14 +2,15 @@ package com.serve.mentorship.service;
 
 import com.serve.mentorship.dto.AuthorDTO;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AuthorService {
-    List<AuthorDTO> getAllAuthors();
-    AuthorDTO getAuthorById(Integer id) throws NotFoundException;
+    List<AuthorDTO> getAllAuthors(Pageable pageable);
+    Optional<AuthorDTO> getAuthorById(Integer id);
     AuthorDTO addAuthor(AuthorDTO author);
-    AuthorDTO updateAuthor(AuthorDTO author) throws NotFoundException;
-    void deleteAuthor(Integer id) throws NotFoundException;
+    Optional<AuthorDTO> updateAuthor(AuthorDTO author);
+    boolean deleteAuthor(Integer id);
 }
