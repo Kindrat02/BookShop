@@ -12,5 +12,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Query("SELECT new com.serve.mentorship.entity.ReviewGroup(COUNT(rw), SUM(rw.rating), rw.customer.id, YEAR(rw.createdAt), MONTH(rw.createdAt)) " +
             "FROM Review rw " +
             "GROUP BY rw.customer, MONTH(rw.createdAt), YEAR(rw.createdAt)")
-    List<ReviewGroup> finr();
+    List<ReviewGroup> getReviewsCountByUserAndDate();
 }

@@ -13,4 +13,6 @@ public interface ReviewService {
     List<ReviewDTO> getAllReviews(Pageable pageable);
     Optional<ReviewDTO> getReviewById(Integer id);
     List<ReviewGroupDTO> getReviewsGroupedByCustomer();
+    boolean deleteReview(Integer id);
+    ReviewDTO createReview(ReviewDTO review);
 }

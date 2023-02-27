@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Profile({"prod"})
 public class EmailService {
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @After("execution(* com.serve.mentorship.service.implementation.AuthorServiceImpl.addAuthor(..))")
     public void sendEmailAfterAuthorCreation(JoinPoint joinPoint) {
         AuthorDTO author = (AuthorDTO) joinPoint.getArgs()[0];

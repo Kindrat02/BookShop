@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface CustomerService {
     List<CustomerDTO> getAllCustomers(Pageable pageable);
     Optional<CustomerDTO> getCustomerById(Integer id);
+    boolean deleteCustomer(Integer id);
+    CustomerDTO createCustomer(CustomerDTO customer);
 }

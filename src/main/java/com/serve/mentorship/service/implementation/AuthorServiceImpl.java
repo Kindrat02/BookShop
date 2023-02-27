@@ -8,12 +8,14 @@ import com.serve.mentorship.service.AuthorService;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
@@ -25,8 +27,6 @@ public class AuthorServiceImpl implements AuthorService {
         this.authorMapper = authorMapper;
     }
 
-    // TODO: transactional
-    // TODO: Spring Boot tests
     @Override
     public List<AuthorDTO> getAllAuthors(Pageable pageable) {
         return authorRepository
@@ -43,6 +43,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .map(authorMapper::toDTO);
     }
 
+    @Transactional
     @Override
     public AuthorDTO addAuthor(AuthorDTO author) {
         Author authorModel = authorMapper.toModel(author);
@@ -52,6 +53,7 @@ public class AuthorServiceImpl implements AuthorService {
         return authorMapper.toDTO(savedEntity);
     }
 
+    @Transactional
     @Override
     public Optional<AuthorDTO> updateAuthor(AuthorDTO author) {
         return authorRepository.findById(author.getId()).map(val -> {
@@ -65,6 +67,7 @@ public class AuthorServiceImpl implements AuthorService {
         }).map(authorMapper::toDTO);
     }
 
+    @Transactional
     @Override
     public boolean deleteAuthor(Integer id) {
         if (authorRepository.existsById(id)) {
